@@ -13,8 +13,8 @@ The experiments conducted demonstrated that the problem can be effectively appro
 **Keywords:** `electrical load forecasting` | `active power` | `artificial neural networks` | `deep learning` | `substations` | `self-organizing maps`
 
 <p align="center">
- <img src="Excel%20Sheets%20And%20Graphs/sin_ys1.png" alt="Load Graph" width="600"/>
+ <img src="Excel%20Sheets%20And%20Graphs/FFNN/sin_ys1.png" alt="Load Graph" width="600"/>
 </p>
 <p align="center">
- <img src="Excel%20Sheets%20And%20Graphs/sin_ys1_draw.png" alt="Load Graph" width="600"/>
+ <img src="Excel%20Sheets%20And%20Graphs/FFNN/sin_ys1_draw.png" alt="Load Graph" width="600"/>
 </p>
