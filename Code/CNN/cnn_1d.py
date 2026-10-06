@@ -124,8 +124,7 @@ def load_power(
     index_start = frame.index.min()
     index_end = frame.index.max()
     if prediction_start is not None and prediction_end is not None:
-        # Extending the grid also permits forecasting a month immediately
-        # outside the measured power range. No target values are fabricated.
+
         index_start = min(index_start, prediction_start - pd.Timedelta(hours=lookback - 1))
         index_end = max(index_end, prediction_end - pd.Timedelta(hours=1))
     hourly_index = pd.date_range(index_start, index_end, freq="h")
@@ -133,7 +132,6 @@ def load_power(
 
 
 def season_number(month: pd.Series) -> pd.Series:
-    # Meteorological seasons: DJF=0, MAM=1, JJA=2, SON=3.
     return ((month % 12) // 3).astype(int)
 
 
@@ -152,8 +150,7 @@ def load_weather(
     for column in WEATHER_COLUMNS:
         weather[column] = pd.to_numeric(weather[column], errors="coerce")
 
-    # February remains visible: use every observed month when calculating
-    # fallback values, and never overwrite its observed weather.
+
     climatology_source = weather.copy()
     climatology_source["season"] = season_number(climatology_source["date"].dt.month)
     seasonal = climatology_source.groupby("season")[WEATHER_COLUMNS].mean()
@@ -230,8 +227,7 @@ def build_samples(
     for position in range(lookback - 1, len(power)):
         timestamp = power.index[position]
         if prediction_start <= timestamp < prediction_end:
-            # Keep a reporting copy while also exposing every available target
-            # from the selected month to the training dataset.
+
             splits = ("train", "test")
         elif timestamp.normalize() in validation_days:
             splits = ("validation",)
@@ -239,9 +235,7 @@ def build_samples(
             splits = ("train",)
         for station_index, station in enumerate(stations):
             target = power.iloc[position][station]
-            # Forecast every hour of the selected month, including hours whose actual
-            # reading is absent. Missing actuals are retained as NaN and are
-            # excluded only from metric calculation, not from prediction.
+
             numeric_target = float(target) if pd.notna(target) else math.nan
             for split in splits:
                 if split == "test" or pd.notna(target):
@@ -292,8 +286,6 @@ class SimpleCNN1D(nn.Module):
             nn.MaxPool1d(2),
             nn.Conv1d(64, 64, kernel_size=3, padding=1),
             nn.ReLU(),
-            # Preserve coarse temporal position instead of collapsing the
-            # complete week to one mean (which would erase hourly phase).
             nn.AdaptiveAvgPool1d(8),
         )
         self.station_embedding = nn.Embedding(station_count, embedding_dim)
@@ -314,8 +306,6 @@ class SimpleCNN1D(nn.Module):
 
 
 def group_training_policy(group_name: str) -> Tuple[bool, Callable[[], nn.Module]]:
-    # Matches the latest repeated-run FFNN: only the very-low Elnet_227 target
-    # is standardized and trained with robust SmoothL1 loss.
     if group_name == "lowest":
         return True, nn.SmoothL1Loss
     return False, nn.MSELoss
@@ -725,8 +715,6 @@ def run_experiment(
         print(f"\nRun {run_index + 1}/{len(config.seeds)} (seed={seed})")
         set_seed(seed)
         validation_days = choose_validation_days(pool_days, config.val_fraction, seed)
-        # February is training data in this variant, so only validation days
-        # are excluded while fitting the feature scaler.
         in_validation = np.array([ts.normalize() in validation_days for ts in covariates.index])
         scaler_mask = ~in_validation
         scaler = StandardScaler().fit(covariates.loc[scaler_mask, FEATURE_COLUMNS])
