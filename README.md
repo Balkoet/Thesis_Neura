@@ -11,3 +11,10 @@ Evaluation distinguishes estimation of a month excluded from feed-forward traini
 The experiments conducted demonstrated that the problem can be effectively approached using artificial neural networks, yielding a high degree of accuracy in the results. Optimal performance was achieved by employing a hybrid Convolutional Neural Network and Long Short-Term Memory (CNN-LSTM) architecture. The substations with the highest consumption exhibited the highest accuracy rates, as well as patterns resembling a sine wave.
 
 **Keywords:** `electrical load forecasting` | `active power` | `artificial neural networks` | `deep learning` | `substations` | `self-organizing maps`
+
+<p align="center">
+ <img src="Excel%20Sheets%20&%20Graphs/sin_ys1.png" alt="Load Graph" width="600"/>
+</p>
+<p align="center">
+ <img src="Excel%20Sheets%20&%20Graphs/sin_ys1_draw.png" alt="Load Graph" width="600"/>
+</p>
